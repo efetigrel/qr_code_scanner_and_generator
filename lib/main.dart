@@ -5,7 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-void main() => runApp(const MaterialApp(home: MyHome()));
+void main() => runApp(
+      MaterialApp(
+        theme: ThemeData(
+          scaffoldBackgroundColor: Colors.deepPurple.shade100,
+          appBarTheme: AppBarTheme(color: Colors.deepPurple),
+        ),
+        debugShowCheckedModeBanner: false,
+        home: MyHome(),
+      ),
+    );
 
 class MyHome extends StatelessWidget {
   const MyHome({Key? key}) : super(key: key);
@@ -13,26 +22,69 @@ class MyHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('QR Kod')),
+      appBar: AppBar(
+          backgroundColor: Colors.deepPurple,
+          foregroundColor: Colors.white,
+          title: const Text('QR Kod Oluşturucu ve Tarayıcı'),
+          centerTitle: true),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const QRViewExample(),
-                ));
-              },
-              child: const Text('QR Kodu Tara'),
+            SizedBox(),
+            Image.asset(
+              'assets/images/qr_code_logo.png',
+              width: 250,
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => QRCodeGenerator(),
-                ));
-              },
-              child: const Text('QR Kod Oluştur'),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const QRViewExample(),
+                      ));
+                    },
+                    child: Text('QR Kodu Tara'),
+                    style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.all(15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                        ),
+                        side: BorderSide(
+                            color: Colors.deepPurple,
+                            width: 2,
+                            strokeAlign: 1)),
+                  ),
+                ),
+                SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => QRCodeGenerator(),
+                      ));
+                    },
+                    child: const Text('QR Kod Oluştur'),
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.deepPurple,
+                      padding: EdgeInsets.all(15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                      ),
+                      side: BorderSide(
+                        width: 3,
+                        color: Colors.deepPurple,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 5),
+              ],
             ),
           ],
         ),
@@ -70,6 +122,11 @@ class _QRViewExampleState extends State<QRViewExample> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('QR Kod Tarayıcı'),
+        centerTitle: true,
+        foregroundColor: Colors.white,
+      ),
       body: Column(
         children: <Widget>[
           Expanded(flex: 4, child: _buildQrView(context)),
@@ -80,74 +137,82 @@ class _QRViewExampleState extends State<QRViewExample> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
+                  SizedBox(height: 20),
                   if (result != null)
-                    Text(
-                        'Barkod Tipi: ${describeEnum(result!.format)}   Veri: ${result!.code}')
+                    Column(
+                      children: [
+                        Text(
+                          'Barkod Tipi: ${describeEnum(result!.format)}',
+                          style:
+                              TextStyle(fontSize: 22, color: Colors.deepPurple),
+                        ),
+                        Text(
+                          'Taranan Veri: ${result!.code}',
+                          style:
+                              TextStyle(fontSize: 22, color: Colors.deepPurple),
+                        )
+                      ],
+                    )
                   else
-                    const Text('Kodu Tarayın'),
+                    Text(
+                      'Kodu Tarayın',
+                      style: TextStyle(fontSize: 22, color: Colors.deepPurple),
+                    ),
+                  SizedBox(height: 10),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Container(
-                        margin: const EdgeInsets.all(8),
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
                         child: ElevatedButton(
-                            onPressed: () async {
-                              await controller?.toggleFlash();
-                              setState(() {});
+                          onPressed: () async {
+                            await controller?.toggleFlash();
+                            setState(() {});
+                          },
+                          child: FutureBuilder(
+                            future: controller?.getFlashStatus(),
+                            builder: (context, snapshot) {
+                              return Icon(Icons.flash_on);
                             },
-                            child: FutureBuilder(
-                              future: controller?.getFlashStatus(),
-                              builder: (context, snapshot) {
-                                return Text('Flaş: ${snapshot.data}');
-                              },
-                            )),
+                          ),
+                        ),
                       ),
-                      Container(
-                        margin: const EdgeInsets.all(8),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
                         child: ElevatedButton(
-                            onPressed: () async {
-                              await controller?.flipCamera();
-                              setState(() {});
+                          onPressed: () async {
+                            await controller?.flipCamera();
+                            setState(() {});
+                          },
+                          child: FutureBuilder(
+                            future: controller?.getCameraInfo(),
+                            builder: (context, snapshot) {
+                              if (snapshot.data != null) {
+                                return Icon(Icons.camera);
+                              } else {
+                                return const Text('yükleniyor');
+                              }
                             },
-                            child: FutureBuilder(
-                              future: controller?.getCameraInfo(),
-                              builder: (context, snapshot) {
-                                if (snapshot.data != null) {
-                                  return Text(
-                                      'Kamerayı Döndür ${describeEnum(snapshot.data!)}');
-                                } else {
-                                  return const Text('yükleniyor');
-                                }
-                              },
-                            )),
-                      )
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Container(
-                        margin: const EdgeInsets.all(8),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
                         child: ElevatedButton(
                           onPressed: () async {
                             await controller?.pauseCamera();
                           },
-                          child: const Text('durdur',
-                              style: TextStyle(fontSize: 20)),
+                          child: Icon(Icons.pause),
                         ),
                       ),
-                      Container(
-                        margin: const EdgeInsets.all(8),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
                         child: ElevatedButton(
                           onPressed: () async {
                             await controller?.resumeCamera();
                           },
-                          child: const Text('devam et',
-                              style: TextStyle(fontSize: 20)),
+                          child: Icon(Icons.play_arrow_rounded),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ],
@@ -163,7 +228,7 @@ class _QRViewExampleState extends State<QRViewExample> {
     // For this example we check how width or tall the device is and change the scanArea and overlay accordingly.
     var scanArea = (MediaQuery.of(context).size.width < 400 ||
             MediaQuery.of(context).size.height < 400)
-        ? 300.0
+        ? 200.0
         : 400.0;
     // To ensure the Scanner view is properly sizes after rotation
     // we need to listen for Flutter SizeChanged notification and update controller
@@ -222,21 +287,28 @@ class _QRCodeGeneratorState extends State<QRCodeGenerator> {
     return Scaffold(
       appBar: AppBar(
         title: Text('QR Kod Oluşturucu'),
+        centerTitle: true,
+        foregroundColor: Colors.white,
       ),
       body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 75.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextField(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 50.0),
+              child: TextField(
                 controller: _textEditingController,
                 decoration: InputDecoration(
                   labelText: 'QR Kod için Veri Girin',
                 ),
               ),
-              SizedBox(height: 20),
-              ElevatedButton(
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
+              child: ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -248,9 +320,17 @@ class _QRCodeGeneratorState extends State<QRCodeGenerator> {
                   );
                 },
                 child: Text('QR Kod Oluştur'),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.deepPurple,
+                  padding: EdgeInsets.all(15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ),
+                ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -267,6 +347,8 @@ class QRCodeDisplay extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('QR Kod Ekranı'),
+        foregroundColor: Colors.white,
+        centerTitle: true,
       ),
       body: Center(
         child: QrImageView(
@@ -274,6 +356,16 @@ class QRCodeDisplay extends StatelessWidget {
           version: QrVersions.auto,
           size: 320,
           gapless: false,
+          errorStateBuilder: (cxt, err) {
+            return Container(
+              child: Center(
+                child: Text(
+                  'Uh oh! Bir şeyler ters gitti.',
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
