@@ -9,7 +9,7 @@ void main() => runApp(
       MaterialApp(
         theme: ThemeData(
           scaffoldBackgroundColor: Colors.deepPurple.shade100,
-          appBarTheme: AppBarTheme(color: Colors.deepPurple),
+          appBarTheme: const AppBarTheme(color: Colors.deepPurple),
         ),
         debugShowCheckedModeBanner: false,
         home: MyHome(),
@@ -17,7 +17,7 @@ void main() => runApp(
     );
 
 class MyHome extends StatelessWidget {
-  const MyHome({Key? key}) : super(key: key);
+  MyHome({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class MyHome extends StatelessWidget {
       appBar: AppBar(
           backgroundColor: Colors.deepPurple,
           foregroundColor: Colors.white,
-          title: const Text('QR Kod Oluşturucu ve Tarayıcı'),
+          title: const Text('QR Code'),
           centerTitle: true),
       body: Center(
         child: Column(
@@ -43,23 +43,24 @@ class MyHome extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const QRViewExample(),
-                      ));
-                    },
-                    child: Text('QR Kodu Tara'),
-                    style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.all(15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => QRViewExample(),
                         ),
-                        side: BorderSide(
-                            color: Colors.deepPurple,
-                            width: 2,
-                            strokeAlign: 1)),
+                      );
+                    },
+                    child: Text('Scan QR Code'),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.all(15),
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                      ),
+                      side: const BorderSide(
+                          color: Colors.deepPurple, width: 2, strokeAlign: 1),
+                    ),
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: ElevatedButton(
@@ -68,15 +69,15 @@ class MyHome extends StatelessWidget {
                         builder: (context) => QRCodeGenerator(),
                       ));
                     },
-                    child: const Text('QR Kod Oluştur'),
+                    child: Text('Generate QR Code'),
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                       backgroundColor: Colors.deepPurple,
-                      padding: EdgeInsets.all(15),
-                      shape: RoundedRectangleBorder(
+                      padding: const EdgeInsets.all(15),
+                      shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(10)),
                       ),
-                      side: BorderSide(
+                      side: const BorderSide(
                         width: 3,
                         color: Colors.deepPurple,
                       ),
@@ -93,10 +94,10 @@ class MyHome extends StatelessWidget {
   }
 }
 
-// -------------------------------- QR KOD TARAYICI --------------------------------
+// -------------------------------- QR CODE SCANNER --------------------------------
 
 class QRViewExample extends StatefulWidget {
-  const QRViewExample({Key? key}) : super(key: key);
+  QRViewExample({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _QRViewExampleState();
@@ -107,8 +108,8 @@ class _QRViewExampleState extends State<QRViewExample> {
   QRViewController? controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
 
-  // Sıcak yeniden yüklemenin çalışması için platformda kamerayı duraklatmamız gerekir
-  // android ise veya platform iOS ise kamerayı devam ettirin.
+  // We need to pause the camera on the platform for the hot reload to work
+  // resume the camera if it is android or if the platform is iOS.
 
   @override
   void reassemble() {
@@ -123,7 +124,7 @@ class _QRViewExampleState extends State<QRViewExample> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('QR Kod Tarayıcı'),
+        title: const Text('QR Code Scanner'),
         centerTitle: true,
         foregroundColor: Colors.white,
       ),
@@ -137,28 +138,28 @@ class _QRViewExampleState extends State<QRViewExample> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   if (result != null)
                     Column(
                       children: [
                         Text(
-                          'Barkod Tipi: ${describeEnum(result!.format)}',
-                          style:
-                              TextStyle(fontSize: 22, color: Colors.deepPurple),
+                          'Barcode Type: ${describeEnum(result!.format)}',
+                          style: const TextStyle(
+                              fontSize: 22, color: Colors.deepPurple),
                         ),
                         Text(
-                          'Taranan Veri: ${result!.code}',
-                          style:
-                              TextStyle(fontSize: 22, color: Colors.deepPurple),
+                          'Scanned Data: ${result!.code}',
+                          style: const TextStyle(
+                              fontSize: 22, color: Colors.deepPurple),
                         )
                       ],
                     )
                   else
-                    Text(
-                      'Kodu Tarayın',
+                    const Text(
+                      'Scan Code',
                       style: TextStyle(fontSize: 22, color: Colors.deepPurple),
                     ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Row(
                     children: [
                       Padding(
@@ -187,9 +188,9 @@ class _QRViewExampleState extends State<QRViewExample> {
                             future: controller?.getCameraInfo(),
                             builder: (context, snapshot) {
                               if (snapshot.data != null) {
-                                return Icon(Icons.camera);
+                                return const Icon(Icons.camera);
                               } else {
-                                return const Text('yükleniyor');
+                                return const Text('loading');
                               }
                             },
                           ),
@@ -201,7 +202,7 @@ class _QRViewExampleState extends State<QRViewExample> {
                           onPressed: () async {
                             await controller?.pauseCamera();
                           },
-                          child: Icon(Icons.pause),
+                          child: const Icon(Icons.pause),
                         ),
                       ),
                       Padding(
@@ -210,7 +211,7 @@ class _QRViewExampleState extends State<QRViewExample> {
                           onPressed: () async {
                             await controller?.resumeCamera();
                           },
-                          child: Icon(Icons.play_arrow_rounded),
+                          child: const Icon(Icons.play_arrow_rounded),
                         ),
                       ),
                     ],
@@ -238,7 +239,7 @@ class _QRViewExampleState extends State<QRViewExample> {
       overlay: QrScannerOverlayShape(
           borderColor: Colors.deepPurple,
           borderRadius: 10,
-          borderLength: 75,
+          borderLength: 50,
           borderWidth: 5,
           cutOutSize: scanArea),
       onPermissionSet: (ctrl, p) => _onPermissionSet(context, ctrl, p),
@@ -260,7 +261,7 @@ class _QRViewExampleState extends State<QRViewExample> {
     log('${DateTime.now().toIso8601String()}_onPermissionSet $p');
     if (!p) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('İzin yok')),
+        const SnackBar(content: Text('no Permission')),
       );
     }
   }
@@ -272,7 +273,7 @@ class _QRViewExampleState extends State<QRViewExample> {
   }
 }
 
-// -------------------------------- QR KOD OLUŞTURUCU --------------------------------
+// -------------------------------- QR CODE GENERATOR --------------------------------
 
 class QRCodeGenerator extends StatefulWidget {
   @override
@@ -286,7 +287,7 @@ class _QRCodeGeneratorState extends State<QRCodeGenerator> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('QR Kod Oluşturucu'),
+        title: const Text('QR Code Generator'),
         centerTitle: true,
         foregroundColor: Colors.white,
       ),
@@ -297,11 +298,11 @@ class _QRCodeGeneratorState extends State<QRCodeGenerator> {
           children: [
             SizedBox(),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 50.0),
+              padding: EdgeInsets.symmetric(horizontal: 50.0),
               child: TextField(
                 controller: _textEditingController,
-                decoration: InputDecoration(
-                  labelText: 'QR Kod için Veri Girin',
+                decoration: const InputDecoration(
+                  labelText: 'Enter Data for QR Code',
                 ),
               ),
             ),
@@ -319,12 +320,12 @@ class _QRCodeGeneratorState extends State<QRCodeGenerator> {
                     ),
                   );
                 },
-                child: Text('QR Kod Oluştur'),
+                child: Text('Generate QR Code'),
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
                   backgroundColor: Colors.deepPurple,
-                  padding: EdgeInsets.all(15),
-                  shape: RoundedRectangleBorder(
+                  padding: const EdgeInsets.all(15),
+                  shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
                 ),
@@ -346,7 +347,7 @@ class QRCodeDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('QR Kod Ekranı'),
+        title: const Text('QR Code Display'),
         foregroundColor: Colors.white,
         centerTitle: true,
       ),
@@ -358,9 +359,9 @@ class QRCodeDisplay extends StatelessWidget {
           gapless: false,
           errorStateBuilder: (cxt, err) {
             return Container(
-              child: Center(
+              child: const Center(
                 child: Text(
-                  'Uh oh! Bir şeyler ters gitti.',
+                  'Uh oh! Something went wrong.',
                   textAlign: TextAlign.center,
                 ),
               ),
